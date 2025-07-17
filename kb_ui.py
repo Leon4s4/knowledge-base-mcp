@@ -87,7 +87,7 @@ def main() -> None:
         mem_id = st.text_input("Memory ID (full or partial)")
         if st.button("Delete"):
             result = run_async(kb_delete(mem_id))
-            st.write(result)
+            st.success(result)
 
 
 if __name__ == "__main__":
