@@ -42,26 +42,31 @@ def init_database():
     # Create data directory if it doesn't exist
     os.makedirs(KB_DATA_DIR, exist_ok=True)
     
-    # Initialize ChromaDB client
-    chroma_client = chromadb.PersistentClient(
-        path=KB_DATA_DIR,
-        settings=Settings(
-            anonymized_telemetry=False,
-            allow_reset=True,
-            is_persistent=True,
-            persist_directory=KB_DATA_DIR
+    try:
+        # Initialize ChromaDB client
+        chroma_client = chromadb.PersistentClient(
+            path=KB_DATA_DIR,
+            settings=Settings(
+                anonymized_telemetry=False,
+                allow_reset=True,
+                is_persistent=True,
+                persist_directory=KB_DATA_DIR
+            )
         )
-    )
-    
-    # Create embedding function (uses default model)
-    default_ef = embedding_functions.DefaultEmbeddingFunction()
-    
-    # Get or create collection with embedding function
-    collection = chroma_client.get_or_create_collection(
-        name=COLLECTION_NAME,
-        embedding_function=default_ef,
-        metadata={"description": "Knowledge base for development memories"}
-    )
+        
+        # Create embedding function (uses default model)
+        default_ef = embedding_functions.DefaultEmbeddingFunction()
+        
+        # Get or create collection with embedding function
+        collection = chroma_client.get_or_create_collection(
+            name=COLLECTION_NAME,
+            embedding_function=default_ef,
+            metadata={"description": "Knowledge base for development memories"}
+        )
+    except Exception as e:
+        print(f"Error initializing ChromaDB: {e}")
+        print("Please check permissions, disk space, and configuration settings.")
+        raise
     
     print(f"Knowledge Base initialized at: {KB_DATA_DIR}")
     print(f"Collection: {COLLECTION_NAME}")
