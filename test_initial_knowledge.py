@@ -12,14 +12,25 @@ from pathlib import Path
 # Add current directory to path to import our server
 sys.path.insert(0, str(Path(__file__).parent))
 
+def cleanup_test_data(test_data_dir: str):
+    """Helper function to clean up test data directory."""
+    if os.path.exists(test_data_dir):
+        shutil.rmtree(test_data_dir)
+
+def reset_environment_vars():
+    """Helper function to reset test environment variables."""
+    if "KB_DATA_DIR" in os.environ:
+        del os.environ["KB_DATA_DIR"]
+    if "KB_INITIAL_FILE" in os.environ:
+        del os.environ["KB_INITIAL_FILE"]
+
 async def test_initial_knowledge():
     """Test the initial knowledge loading functionality."""
     print("🧪 Testing Initial Knowledge Loading...")
     
     # Clean up any existing test data
     test_data_dir = "./test_kb_data"
-    if os.path.exists(test_data_dir):
-        shutil.rmtree(test_data_dir)
+    cleanup_test_data(test_data_dir)
     
     try:
         # Set environment variables for test
@@ -62,15 +73,9 @@ async def test_initial_knowledge():
         return False
     
     finally:
-        # Clean up test data
-        if os.path.exists(test_data_dir):
-            shutil.rmtree(test_data_dir)
-        
-        # Reset environment variables
-        if "KB_DATA_DIR" in os.environ:
-            del os.environ["KB_DATA_DIR"]
-        if "KB_INITIAL_FILE" in os.environ:
-            del os.environ["KB_INITIAL_FILE"]
+        # Clean up test data and reset environment
+        cleanup_test_data(test_data_dir)
+        reset_environment_vars()
     
     return True
 
