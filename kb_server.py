@@ -300,11 +300,12 @@ async def kb_search(
         if not results["documents"] or not results["documents"][0]:
             return "🔍 No relevant memories found for your query."
         
-        # Format results
+        # Format results and update access tracking
         formatted_results = []
         documents = results["documents"][0]
         metadatas = results["metadatas"][0] if results["metadatas"] else []
         distances = results["distances"][0] if results["distances"] else []
+        ids = results["ids"][0] if results["ids"] else []
         
         for i, doc in enumerate(documents):
             result = f"📝 **Memory {i+1}**:\n{doc}"
@@ -329,11 +330,22 @@ async def kb_search(
                     similarity = 1 - distances[i]  # Convert distance to similarity
                     result += f"\n- Relevance: {similarity:.2%}"
                 
-                # Update access count
+                # Update access count and persist to ChromaDB
                 try:
-                    current_count = metadata.get('access_count', 0)
-                    metadata['access_count'] = current_count + 1
-                    metadata['last_accessed'] = datetime.now(timezone.utc).isoformat()
+                    if i < len(ids):
+                        current_count = metadata.get('access_count', 0)
+                        updated_metadata = metadata.copy()
+                        updated_metadata['access_count'] = current_count + 1
+                        updated_metadata['last_accessed'] = datetime.now(timezone.utc).isoformat()
+                        
+                        # Update the metadata in ChromaDB
+                        collection.update(
+                            ids=[ids[i]],
+                            metadatas=[updated_metadata]
+                        )
+                        
+                        # Show updated count in the result
+                        result += f"\n- Access Count: {updated_metadata['access_count']}"
                 except Exception:
                     pass  # Ignore metadata update errors
             
