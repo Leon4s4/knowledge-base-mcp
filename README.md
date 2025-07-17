@@ -10,6 +10,7 @@ A mem0-like memory system for GitHub Copilot that provides persistent knowledge 
 - 🔒 **Local Storage**: All data stored locally for corporate compliance
 - ⚡ **Fast Retrieval**: Sub-500ms search performance
 - 🎯 **GitHub Copilot Integration**: Designed specifically for Copilot workflows
+- 🌐 **Streamlit UI**: Web interface for searching and managing memories
 
 ## Memory Types
 
@@ -31,10 +32,11 @@ A mem0-like memory system for GitHub Copilot that provides persistent knowledge 
    pip install -r requirements.txt
    ```
 
-3. **Test the server**:
+3. **Start the server**:
    ```bash
    python kb_server.py
    ```
+   This also launches a Streamlit UI at [http://localhost:8501](http://localhost:8501) for managing memories.
 
 ## GitHub Copilot Integration
 
@@ -143,6 +145,7 @@ Delete a memory by ID.
 
 - `KB_DATA_DIR`: Directory for ChromaDB storage (default: `./kb_data`)
 - `KB_INITIAL_FILE`: Optional path to initial knowledge file to load on startup
+- `KB_UI_PORT`: Port for the Streamlit UI (default: `8501`)
 
 ### Initial Knowledge File
 

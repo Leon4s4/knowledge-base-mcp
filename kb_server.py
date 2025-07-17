@@ -10,6 +10,8 @@ import asyncio
 import json
 import os
 import re
+import subprocess
+import sys
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,6 +35,9 @@ KB_DATA_DIR = os.getenv("KB_DATA_DIR", "./kb_data")
 KB_INITIAL_FILE = os.getenv("KB_INITIAL_FILE", None)
 EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
 COLLECTION_NAME = "knowledge_base"
+KB_UI_PORT = os.getenv("KB_UI_PORT", "8501")
+
+ui_process: Optional[subprocess.Popen] = None
 
 
 def init_database():
@@ -75,6 +80,25 @@ def init_database():
     # Load initial knowledge file if specified
     if KB_INITIAL_FILE:
         load_initial_knowledge(KB_INITIAL_FILE)
+
+
+def start_ui() -> Optional[subprocess.Popen]:
+    """Launch the Streamlit UI in a separate process."""
+    ui_script = Path(__file__).with_name("kb_ui.py")
+    if not ui_script.exists():
+        return None
+    try:
+        proc = subprocess.Popen(
+            [sys.executable, "-m", "streamlit", "run", str(ui_script),
+             "--server.port", str(KB_UI_PORT), "--server.headless", "true"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        print(f"Streamlit UI available at http://localhost:{KB_UI_PORT}")
+        return proc
+    except FileNotFoundError:
+        print("Streamlit not installed; UI will not start.")
+        return None
 
 
 def load_initial_knowledge(file_path: str):
@@ -495,6 +519,10 @@ def main() -> None:
         # Initialize database
         init_database()
 
+        # Start the Streamlit UI in parallel
+        global ui_process
+        ui_process = start_ui()
+
         print("Knowledge Base MCP Server ready!")
         print("Running on stdio transport...")
 
@@ -506,6 +534,11 @@ def main() -> None:
     except Exception as e:
         print(f"Error starting server: {e}")
         raise
+    finally:
+        if ui_process:
+            ui_process.terminate()
+            ui_process.wait(timeout=5)
+            print("Streamlit UI stopped.")
 
 
 if __name__ == "__main__":
