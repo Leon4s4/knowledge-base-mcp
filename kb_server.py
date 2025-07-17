@@ -516,7 +516,7 @@ if __name__ == "__main__":
 
     if loop and loop.is_running():
         # Schedule the server on the existing event loop
-        loop.create_task(main())
+        asyncio.ensure_future(main())
     else:
         asyncio.run(main())
 
