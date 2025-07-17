@@ -9,9 +9,12 @@ import os
 import sys
 from pathlib import Path
 
+import pytest
+
 # Add current directory to path to import our server
 sys.path.insert(0, str(Path(__file__).parent))
 
+@pytest.mark.asyncio
 async def test_server():
     """Test the MCP server functionality."""
     print("🧪 Testing Knowledge Base MCP Server...")
@@ -74,12 +77,4 @@ public async Task TestGraphQLMutation() {
     return True
 
 if __name__ == "__main__":
-    # Run tests
-    success = asyncio.run(test_server())
-    
-    if success:
-        print("\n✅ Knowledge Base MCP Server is ready for use!")
-        print("📡 To run the server: python kb_server.py")
-    else:
-        print("\n❌ Tests failed. Please check the error messages above.")
-        sys.exit(1)
+    asyncio.run(test_server())

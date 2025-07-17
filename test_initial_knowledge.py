@@ -9,6 +9,8 @@ import sys
 import shutil
 from pathlib import Path
 
+import pytest
+
 # Add current directory to path to import our server
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -24,6 +26,7 @@ def reset_environment_vars():
     if "KB_INITIAL_FILE" in os.environ:
         del os.environ["KB_INITIAL_FILE"]
 
+@pytest.mark.asyncio
 async def test_initial_knowledge():
     """Test the initial knowledge loading functionality."""
     print("🧪 Testing Initial Knowledge Loading...")
@@ -80,11 +83,4 @@ async def test_initial_knowledge():
     return True
 
 if __name__ == "__main__":
-    # Run tests
-    success = asyncio.run(test_initial_knowledge())
-    
-    if success:
-        print("\n✅ Initial knowledge loading feature is working correctly!")
-    else:
-        print("\n❌ Tests failed. Please check the error messages above.")
-        sys.exit(1)
+    asyncio.run(test_initial_knowledge())
