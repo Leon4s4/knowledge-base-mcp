@@ -487,20 +487,20 @@ async def kb_delete(memory_id: str) -> str:
         return f"Error deleting memory: {str(e)}"
 
 
-async def main():
+def main() -> None:
     """Initialize and run the MCP server."""
     print("Initializing Knowledge Base MCP Server...")
-    
+
     try:
         # Initialize database
         init_database()
-        
+
         print("Knowledge Base MCP Server ready!")
         print("Running on stdio transport...")
-        
-        # Run the server
-        await mcp.run(transport="stdio")
-        
+
+        # Run the server (blocking call)
+        mcp.run(transport="stdio")
+
     except KeyboardInterrupt:
         print("\nKnowledge Base MCP Server shutting down...")
     except Exception as e:
@@ -509,14 +509,5 @@ async def main():
 
 
 if __name__ == "__main__":
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = None
-
-    if loop and loop.is_running():
-        # Schedule the server on the existing event loop
-        asyncio.ensure_future(main())
-    else:
-        asyncio.run(main())
+    main()
 
