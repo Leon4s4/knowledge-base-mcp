@@ -1,0 +1,41 @@
+we use splunk on the cloud at https://company.splunkcloud.com for application logging and monitoring. Login with Azure AD credentials.
+
+our grafana dashboard is located at https://grafana.internal.com/dashboards. Use team credentials for access.
+
+when dynatrace fails in tanzu platform, use the DT_DISABLE environment variable and restart the application instance. Check logs in /var/log/dynatrace for errors.
+
+we use graphql to expose dynamics 365 data. The API endpoint is https://api.company.com/graphql. Authentication uses Azure AD Bearer tokens. Rate limit is 1000 requests per minute per client.
+
+here's our standard graphql mutation test pattern:
+```csharp
+[Test]
+public async Task TestGraphQLMutation() {
+    var mutation = @"
+        mutation CreateRecord($input: RecordInput!) {
+            createRecord(input: $input) {
+                id
+                success
+                errors
+            }
+        }";
+    
+    var request = new GraphQLRequest {
+        Query = mutation,
+        Variables = new { input = testData }
+    };
+    
+    var result = await client.SendMutationAsync(request);
+    Assert.IsNotNull(result.Data);
+    Assert.IsNull(result.Errors);
+}
+```
+
+our kubernetes clusters run on azure aks. The staging cluster is aks-staging-001 and production is aks-prod-001. Use kubectl with azure cli authentication.
+
+for database migrations, always use the migration tool at /tools/db-migrate. Run with --dry-run flag first to preview changes.
+
+our ci/cd pipeline uses azure devops. Build definitions are in the azure-pipelines folder. Deployments require approval from team leads.
+
+when troubleshooting azure functions, check the application insights logs at https://insights.azure.com/logs. Filter by timestamp and function name.
+
+our redis cache cluster is redis.company.com:6379. Use connection string from azure key vault for authentication.

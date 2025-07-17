@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "knowledge-base": {
+      "command": "python",
+      "args": ["/Users/Git/kb-mcp/kb_server.py"],
+      "env": {
+        "KB_DATA_DIR": "/Users/Git/kb-mcp/kb_data",
+        "KB_INITIAL_FILE": "/Users/Git/kb-mcp/initial_knowledge.txt"
+      }
+    }
+  }
+}
