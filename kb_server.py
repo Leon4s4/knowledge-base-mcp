@@ -88,14 +88,10 @@ def load_initial_knowledge(file_path: str):
             print(f"⚠️ Initial knowledge file not found: {file_path}")
             return
         
-        # Check if initial knowledge was already loaded
-        existing = collection.get(
-            where={"source": "initial_knowledge"},
-            limit=1
-        )
-        
-        if existing["ids"]:
-            print(f"ℹ️ Initial knowledge already loaded ({len(existing['ids'])} entries found), skipping...")
+        # Check marker file to see if initial knowledge was already loaded
+        marker_file = os.path.join(KB_DATA_DIR, ".initial_knowledge_loaded")
+        if os.path.exists(marker_file):
+            print(f"ℹ️ Initial knowledge already loaded (marker file exists), skipping...")
             return
         
         print(f"📖 Loading initial knowledge from: {file_path}")
@@ -139,6 +135,13 @@ def load_initial_knowledge(file_path: str):
                 continue
         
         print(f"✅ Loaded {loaded_count} knowledge entries from initial file")
+        
+        # Create marker file to indicate initial knowledge has been loaded
+        marker_file = os.path.join(KB_DATA_DIR, ".initial_knowledge_loaded")
+        with open(marker_file, 'w') as f:
+            f.write(f"Initial knowledge loaded on {datetime.now(timezone.utc).isoformat()}\n")
+            f.write(f"Source file: {file_path}\n")
+            f.write(f"Entries loaded: {loaded_count}\n")
         
     except Exception as e:
         print(f"❌ Error loading initial knowledge: {str(e)}")
