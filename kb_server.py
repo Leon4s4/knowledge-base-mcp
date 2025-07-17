@@ -509,4 +509,14 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        # Schedule the server on the existing event loop
+        asyncio.ensure_future(main())
+    else:
+        asyncio.run(main())
+
