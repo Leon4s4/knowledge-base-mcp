@@ -80,34 +80,34 @@ def init_database():
 def load_initial_knowledge(file_path: str):
     """Load initial knowledge from a text file."""
     if not collection:
-        print("❌ Cannot load initial knowledge: Database not initialized")
+        print("Cannot load initial knowledge: Database not initialized")
         return
     
     try:
         if not os.path.exists(file_path):
-            print(f"⚠️ Initial knowledge file not found: {file_path}")
+            print(f"Initial knowledge file not found: {file_path}")
             return
         
         # Check marker file to see if initial knowledge was already loaded
         marker_file = os.path.join(KB_DATA_DIR, ".initial_knowledge_loaded")
         if os.path.exists(marker_file):
-            print(f"ℹ️ Initial knowledge already loaded (marker file exists), skipping...")
+            print(f"Initial knowledge already loaded (marker file exists), skipping...")
             return
         
-        print(f"📖 Loading initial knowledge from: {file_path}")
+        print(f"Loading initial knowledge from: {file_path}")
         
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read().strip()
         
         if not content:
-            print("⚠️ Initial knowledge file is empty")
+            print("Initial knowledge file is empty")
             return
         
         # Split content by double newlines to separate entries
         entries = [entry.strip() for entry in content.split('\n\n') if entry.strip()]
         
         if not entries:
-            print("⚠️ No knowledge entries found in file")
+            print("No knowledge entries found in file")
             return
         
         loaded_count = 0
@@ -131,10 +131,10 @@ def load_initial_knowledge(file_path: str):
                 loaded_count += 1
                 
             except Exception as e:
-                print(f"⚠️ Failed to load entry {i+1}: {str(e)}")
+                print(f"Failed to load entry {i+1}: {str(e)}")
                 continue
         
-        print(f"✅ Loaded {loaded_count} knowledge entries from initial file")
+        print(f"Loaded {loaded_count} knowledge entries from initial file")
         
         # Create marker file to indicate initial knowledge has been loaded
         marker_file = os.path.join(KB_DATA_DIR, ".initial_knowledge_loaded")
@@ -144,7 +144,7 @@ def load_initial_knowledge(file_path: str):
             f.write(f"Entries loaded: {loaded_count}\n")
         
     except Exception as e:
-        print(f"❌ Error loading initial knowledge: {str(e)}")
+        print(f"Error loading initial knowledge: {str(e)}")
 
 
 def extract_metadata(content: str) -> Dict[str, Any]:
@@ -251,10 +251,10 @@ async def kb_save(
         )
         
         techs = metadata['technologies'].split(',') if metadata['technologies'] else []
-        return f"✅ Memory saved successfully!\nID: {memory_id}\nType: {metadata['memory_type']}\nTechnologies: {', '.join(techs) if techs else 'None'}"
+        return f"Memory saved successfully!\nID: {memory_id}\nType: {metadata['memory_type']}\nTechnologies: {', '.join(techs) if techs else 'None'}"
         
     except Exception as e:
-        return f"❌ Error saving memory: {str(e)}"
+        return f"Error saving memory: {str(e)}"
 
 
 @mcp.tool(
@@ -298,7 +298,7 @@ async def kb_search(
         )
         
         if not results["documents"] or not results["documents"][0]:
-            return "🔍 No relevant memories found for your query."
+            return "No relevant memories found for your query."
         
         # Format results and update access tracking
         formatted_results = []
@@ -308,11 +308,11 @@ async def kb_search(
         ids = results["ids"][0] if results["ids"] else []
         
         for i, doc in enumerate(documents):
-            result = f"📝 **Memory {i+1}**:\n{doc}"
+            result = f"**Memory {i+1}**:\n{doc}"
             
             if include_metadata and i < len(metadatas):
                 metadata = metadatas[i]
-                result += f"\n\n📊 **Details:**"
+                result += f"\n\n**Details:**"
                 result += f"\n- Type: {metadata.get('memory_type', 'Unknown')}"
                 result += f"\n- Created: {metadata.get('created_at', 'Unknown')}"
                 
@@ -351,13 +351,13 @@ async def kb_search(
             
             formatted_results.append(result)
         
-        response = f"🔍 **Found {len(documents)} relevant memories:**\n\n"
+        response = f"**Found {len(documents)} relevant memories:**\n\n"
         response += "\n\n" + "="*50 + "\n\n".join(formatted_results)
         
         return response
         
     except Exception as e:
-        return f"❌ Error searching memories: {str(e)}"
+        return f"Error searching memories: {str(e)}"
 
 
 @mcp.tool(
@@ -399,7 +399,7 @@ async def kb_list(
         
         if not results["ids"]:
             filter_msg = f" with type '{memory_type}'" if memory_type else ""
-            return f"📝 No memories found{filter_msg}."
+            return f"No memories found{filter_msg}."
         
         # Format results
         formatted_entries = []
@@ -414,22 +414,22 @@ async def kb_list(
                 content = doc[:100] + "..." if len(doc) > 100 else doc
             
             entry = f"**{i+1}.** `{memory_id[:8]}...`\n"
-            entry += f"📝 {content}\n"
-            entry += f"🏷️ Type: {metadata.get('memory_type', 'Unknown')}"
+            entry += f"{content}\n"
+            entry += f"Type: {metadata.get('memory_type', 'Unknown')}"
             
             if metadata.get('technologies'):
                 techs = metadata['technologies'].split(',') if metadata['technologies'] else []
                 if techs:
                     entry += f" | Tech: {', '.join(techs[:3])}"
             
-            entry += f"\n📅 Created: {metadata.get('created_at', 'Unknown')[:10]}"
+            entry += f"\nCreated: {metadata.get('created_at', 'Unknown')[:10]}"
             
             if metadata.get('access_count', 0) > 0:
                 entry += f" | Accessed: {metadata['access_count']} times"
             
             formatted_entries.append(entry)
         
-        response = f"📚 **Knowledge Base ({len(results['ids'])} entries"
+        response = f"**Knowledge Base ({len(results['ids'])} entries"
         if memory_type:
             response += f", type: {memory_type}"
         response += "):**\n\n"
@@ -439,7 +439,7 @@ async def kb_list(
         return response
         
     except Exception as e:
-        return f"❌ Error listing memories: {str(e)}"
+        return f"Error listing memories: {str(e)}"
 
 
 @mcp.tool(
@@ -471,40 +471,40 @@ async def kb_delete(memory_id: str) -> str:
                 matching_ids.append(full_id)
         
         if not matching_ids:
-            return f"❌ No memory found with ID containing: {memory_id}"
+            return f"No memory found with ID containing: {memory_id}"
         
         if len(matching_ids) > 1:
-            return f"❌ Multiple memories match '{memory_id}'. Please use a more specific ID:\n" + \
+            return f"Multiple memories match '{memory_id}'. Please use a more specific ID:\n" + \
                    "\n".join([f"- {mid[:16]}..." for mid in matching_ids[:5]])
         
         # Delete the memory
         memory_to_delete = matching_ids[0]
         collection.delete(ids=[memory_to_delete])
         
-        return f"✅ Memory deleted successfully: {memory_to_delete[:16]}..."
+        return f"Memory deleted successfully: {memory_to_delete[:16]}..."
         
     except Exception as e:
-        return f"❌ Error deleting memory: {str(e)}"
+        return f"Error deleting memory: {str(e)}"
 
 
 async def main():
     """Initialize and run the MCP server."""
-    print("🧠 Initializing Knowledge Base MCP Server...")
+    print("Initializing Knowledge Base MCP Server...")
     
     try:
         # Initialize database
         init_database()
         
-        print("✅ Knowledge Base MCP Server ready!")
-        print("📡 Running on stdio transport...")
+        print("Knowledge Base MCP Server ready!")
+        print("Running on stdio transport...")
         
         # Run the server
         await mcp.run(transport="stdio")
         
     except KeyboardInterrupt:
-        print("\n👋 Knowledge Base MCP Server shutting down...")
+        print("\nKnowledge Base MCP Server shutting down...")
     except Exception as e:
-        print(f"❌ Error starting server: {e}")
+        print(f"Error starting server: {e}")
         raise
 
 
