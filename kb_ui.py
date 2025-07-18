@@ -80,7 +80,7 @@ def main() -> None:
         st.subheader("All Memories")
         
         # Filtering options in columns
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         
         with col1:
             mtype = st.selectbox(
@@ -95,9 +95,6 @@ def main() -> None:
                 [10, 20, 50],
                 index=0
             )
-        
-        with col3:
-            include_content = st.checkbox("Show full content", value=False)
         
         # Initialize pagination state
         if "page_number" not in st.session_state:
@@ -123,106 +120,72 @@ def main() -> None:
                     # Display memories as cards
                     st.markdown("---")
                     
-                    # Create cards in grid layout
-                    cols_per_row = 2
-                    for i in range(0, len(results["ids"]), cols_per_row):
-                        cols = st.columns(cols_per_row)
+                    # Define memory type colors
+                    type_colors = {
+                        'environment': '🌐',
+                        'code_snippet': '💻', 
+                        'operational': '⚙️',
+                        'architectural': '🏗️',
+                        'general': '📝'
+                    }
+                    
+                    # Create cards using Streamlit containers and columns
+                    for idx in range(len(results["ids"])):
+                        memory_id = results["ids"][idx]
+                        doc = results["documents"][idx] if idx < len(results["documents"]) else ""
+                        metadata = results["metadatas"][idx] if idx < len(results["metadatas"]) else {}
+                        memory_type = metadata.get('memory_type', 'general')
                         
-                        for j in range(cols_per_row):
-                            idx = i + j
-                            if idx < len(results["ids"]):
-                                memory_id = results["ids"][idx]
-                                doc = results["documents"][idx] if idx < len(results["documents"]) else ""
-                                metadata = results["metadatas"][idx] if idx < len(results["metadatas"]) else {}
-                                
-                                with cols[j]:
-                                    # Create card container with fixed height
-                                    with st.container():
-                                        # Memory type badge
-                                        memory_type = metadata.get('memory_type', 'general')
-                                        type_colors = {
-                                            'environment': '🌐',
-                                            'code_snippet': '💻', 
-                                            'operational': '⚙️',
-                                            'architectural': '🏗️',
-                                            'general': '📝'
-                                        }
-                                        
-                                        # Card header
-                                        st.markdown(f"""
-                                        <div style="
-                                            border: 2px solid #e0e0e0;
-                                            border-radius: 12px;
-                                            padding: 20px;
-                                            margin-bottom: 16px;
-                                            height: 200px;
-                                            display: flex;
-                                            flex-direction: column;
-                                            cursor: pointer;
-                                            background: #ffffff;
-                                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                                            transition: all 0.2s ease;
-                                        ">
-                                            <div style="
-                                                display: flex;
-                                                justify-content: space-between;
-                                                align-items: center;
-                                                margin-bottom: 12px;
-                                            ">
-                                                <span style="
-                                                    background: #e3f2fd;
-                                                    color: #1976d2;
-                                                    padding: 6px 12px;
-                                                    border-radius: 16px;
-                                                    font-size: 13px;
-                                                    font-weight: 600;
-                                                ">
-                                                    {type_colors.get(memory_type, '📝')} {memory_type}
-                                                </span>
-                                                <small style="
-                                                    color: #424242;
-                                                    font-weight: 500;
-                                                    font-size: 12px;
-                                                ">
-                                                    {metadata.get('created_at', '')[:10]}
-                                                </small>
-                                            </div>
-                                            <div style="
-                                                flex: 1;
-                                                overflow: hidden;
-                                                margin-bottom: 12px;
-                                            ">
-                                                <p style="
-                                                    margin: 0;
-                                                    font-size: 15px;
-                                                    line-height: 1.5;
-                                                    height: 90px;
-                                                    overflow: hidden;
-                                                    text-overflow: ellipsis;
-                                                    color: #212121;
-                                                    font-weight: 400;
-                                                ">
-                                                    {doc[:150]}{'...' if len(doc) > 150 else ''}
-                                                </p>
-                                            </div>
-                                            <div style="
-                                                font-size: 12px;
-                                                color: #616161;
-                                                border-top: 1px solid #e0e0e0;
-                                                padding-top: 8px;
-                                                font-weight: 500;
-                                            ">
-                                                ID: {memory_id[:8]}... | 
-                                                Accessed: {metadata.get('access_count', 0)} times
-                                            </div>
-                                        </div>
-                                        """, unsafe_allow_html=True)
-                                        
-                                        # Clickable button overlay
-                                        if st.button(f"View Details", key=f"card_{memory_id}", use_container_width=True):
-                                            st.session_state.selected_memory_id = memory_id
-                                            st.session_state.action = "Memory Details"
+                        # Create card container
+                        with st.container():
+                            # Card header with type badge and date
+                            col1, col2 = st.columns([3, 1])
+                            with col1:
+                                st.markdown(f"**{type_colors.get(memory_type, '📝')} {memory_type.title()}**")
+                            with col2:
+                                st.caption(metadata.get('created_at', '')[:10])
+                            
+                            # Card content
+                            content_preview = doc[:150] + ('...' if len(doc) > 150 else '')
+                            st.write(content_preview)
+                            
+                            # Card footer with ID and actions
+                            col1, col2, col3 = st.columns([3.5, 1, 1])
+                            with col1:
+                                st.caption(f"ID: {memory_id[:8]}... | Accessed: {metadata.get('access_count', 0)} times")
+                            with col2:
+                                if st.button("✏️ Edit", key=f"edit_{memory_id}", help="View and edit memory", use_container_width=True):
+                                    st.session_state.selected_memory_id = memory_id
+                                    st.session_state.action = "Memory Details"
+                                    st.rerun()
+                            with col3:
+                                if st.button("🗑️ Delete", key=f"delete_{memory_id}", help="Delete memory", use_container_width=True):
+                                    # Quick delete with confirmation
+                                    if f"confirm_delete_{memory_id}" not in st.session_state:
+                                        st.session_state[f"confirm_delete_{memory_id}"] = True
+                                        st.rerun()
+                            
+                            # Show delete confirmation if needed
+                            if f"confirm_delete_{memory_id}" in st.session_state:
+                                st.warning("⚠️ Are you sure you want to delete this memory?")
+                                col1, col2, col3 = st.columns([1, 1, 2])
+                                with col1:
+                                    if st.button("Yes, Delete", key=f"confirm_yes_{memory_id}", type="primary"):
+                                        try:
+                                            from kb_server import collection
+                                            collection.delete(ids=[memory_id])
+                                            st.success("Memory deleted!")
+                                            del st.session_state[f"confirm_delete_{memory_id}"]
                                             st.rerun()
+                                        except Exception as e:
+                                            st.error(f"Error deleting memory: {str(e)}")
+                                with col2:
+                                    if st.button("Cancel", key=f"confirm_no_{memory_id}"):
+                                        del st.session_state[f"confirm_delete_{memory_id}"]
+                                        st.rerun()
+                            
+                            # Visual separator between cards
+                            st.divider()
                 else:
                     st.info("No memories found. Click 'Add Memory' to get started!")
                     
