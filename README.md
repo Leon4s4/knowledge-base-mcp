@@ -10,7 +10,7 @@ A mem0-like memory system for GitHub Copilot that provides persistent knowledge 
 - 🔒 **Local Storage**: All data stored locally for corporate compliance
 - ⚡ **Fast Retrieval**: Sub-500ms search performance
 - 🎯 **GitHub Copilot Integration**: Designed specifically for Copilot workflows
-- 🌐 **Streamlit UI**: Web interface for searching and managing memories
+- 🌐 **Web UI**: Optional Streamlit interface for searching and managing memories
 
 ## Memory Types
 
@@ -24,7 +24,7 @@ A mem0-like memory system for GitHub Copilot that provides persistent knowledge 
 1. **Clone the repository**:
    ```bash
    git clone <repo-url>
-   cd kb-mcp
+   cd knowledge-base-mcp
    ```
 
 2. **Install dependencies**:
@@ -36,7 +36,12 @@ A mem0-like memory system for GitHub Copilot that provides persistent knowledge 
    ```bash
    python kb_server.py
    ```
-   This also launches a Streamlit UI at [http://localhost:8501](http://localhost:8501) for managing memories.
+
+4. **Access the Web UI** (optional):
+   ```bash
+   streamlit run kb_ui.py
+   ```
+   This launches a Streamlit UI at [http://localhost:8501](http://localhost:8501) for managing memories.
 
 ## GitHub Copilot Integration
 
@@ -49,9 +54,9 @@ Add to your `claude_desktop_config.json`:
   "mcpServers": {
     "knowledge-base": {
       "command": "python",
-      "args": ["/absolute/path/to/kb-mcp/kb_server.py"],
+      "args": ["/absolute/path/to/knowledge-base-mcp/kb_server.py"],
       "env": {
-        "KB_DATA_DIR": "/absolute/path/to/kb-mcp/kb_data"
+        "KB_DATA_DIR": "/absolute/path/to/knowledge-base-mcp/kb_data"
       }
     }
   }
@@ -67,10 +72,10 @@ Add to your VS Code settings or MCP configuration:
   "mcpServers": {
     "knowledge-base": {
       "command": "python",
-      "args": ["/absolute/path/to/kb-mcp/kb_server.py"],
+      "args": ["/absolute/path/to/knowledge-base-mcp/kb_server.py"],
       "env": {
-        "KB_DATA_DIR": "/absolute/path/to/kb-mcp/kb_data",
-        "KB_INITIAL_FILE": "/absolute/path/to/kb-mcp/initial_knowledge.txt"
+        "KB_DATA_DIR": "/absolute/path/to/knowledge-base-mcp/kb_data",
+        "KB_INITIAL_FILE": "/absolute/path/to/knowledge-base-mcp/initial_knowledge.txt"
       }
     }
   }
@@ -224,8 +229,9 @@ All data is stored locally in ChromaDB format:
 
 ### Project Structure
 ```
-kb-mcp/
+knowledge-base-mcp/
 ├── kb_server.py                  # Main MCP server
+├── kb_ui.py                      # Streamlit web interface
 ├── test_server.py                # Functionality tests
 ├── test_initial_knowledge.py     # Initial knowledge loading tests
 ├── examples.py                   # Usage demonstrations

@@ -498,10 +498,6 @@ def main() -> None:
         # Initialize database
         init_database()
 
-        # Start the Streamlit UI in parallel
-        global ui_process
-        ui_process = start_ui()
-
         print("Knowledge Base MCP Server ready!")
         print("Running on stdio transport...")
 
