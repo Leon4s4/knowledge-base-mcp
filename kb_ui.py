@@ -151,55 +151,66 @@ def main() -> None:
                                         # Card header
                                         st.markdown(f"""
                                         <div style="
-                                            border: 1px solid #ddd;
-                                            border-radius: 8px;
-                                            padding: 16px;
+                                            border: 2px solid #e0e0e0;
+                                            border-radius: 12px;
+                                            padding: 20px;
                                             margin-bottom: 16px;
                                             height: 200px;
                                             display: flex;
                                             flex-direction: column;
                                             cursor: pointer;
-                                            background: white;
+                                            background: #ffffff;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                            transition: all 0.2s ease;
                                         ">
                                             <div style="
                                                 display: flex;
                                                 justify-content: space-between;
                                                 align-items: center;
-                                                margin-bottom: 8px;
+                                                margin-bottom: 12px;
                                             ">
                                                 <span style="
-                                                    background: #f0f0f0;
-                                                    padding: 4px 8px;
-                                                    border-radius: 12px;
-                                                    font-size: 12px;
+                                                    background: #e3f2fd;
+                                                    color: #1976d2;
+                                                    padding: 6px 12px;
+                                                    border-radius: 16px;
+                                                    font-size: 13px;
+                                                    font-weight: 600;
                                                 ">
                                                     {type_colors.get(memory_type, '📝')} {memory_type}
                                                 </span>
-                                                <small style="color: #666;">
+                                                <small style="
+                                                    color: #424242;
+                                                    font-weight: 500;
+                                                    font-size: 12px;
+                                                ">
                                                     {metadata.get('created_at', '')[:10]}
                                                 </small>
                                             </div>
                                             <div style="
                                                 flex: 1;
                                                 overflow: hidden;
-                                                margin-bottom: 8px;
+                                                margin-bottom: 12px;
                                             ">
                                                 <p style="
                                                     margin: 0;
-                                                    font-size: 14px;
-                                                    line-height: 1.4;
-                                                    height: 84px;
+                                                    font-size: 15px;
+                                                    line-height: 1.5;
+                                                    height: 90px;
                                                     overflow: hidden;
                                                     text-overflow: ellipsis;
+                                                    color: #212121;
+                                                    font-weight: 400;
                                                 ">
                                                     {doc[:150]}{'...' if len(doc) > 150 else ''}
                                                 </p>
                                             </div>
                                             <div style="
-                                                font-size: 11px;
-                                                color: #888;
-                                                border-top: 1px solid #eee;
+                                                font-size: 12px;
+                                                color: #616161;
+                                                border-top: 1px solid #e0e0e0;
                                                 padding-top: 8px;
+                                                font-weight: 500;
                                             ">
                                                 ID: {memory_id[:8]}... | 
                                                 Accessed: {metadata.get('access_count', 0)} times
